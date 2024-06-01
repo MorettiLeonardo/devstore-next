@@ -24,7 +24,6 @@ async function getProduct(slug: string): Promise<Product> {
 
 export default async function ProductPage({ params }: ProductProps) {
   const product = await getProduct(params.slug)
-  console.log(product)
 
   return (
     <div className="relative grid max-h-[860px] grid-cols-3">

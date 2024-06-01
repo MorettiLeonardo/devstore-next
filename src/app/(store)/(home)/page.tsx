@@ -1,10 +1,14 @@
+<<<<<<< HEAD
 import { api } from '@/data/api'
+=======
+>>>>>>> a920274c1012081181b4c5bd6051e931a8429bbc
 import { Product } from '@/data/types/products'
 import { convertPrice } from '@/utils/convertPrice'
 import Image from 'next/image'
 import Link from 'next/link'
 
 async function getFeaturedProducts(): Promise<Product[]> {
+<<<<<<< HEAD
   const response = await api('/products/featured', {
     next: {
       revalidate: 60 * 60, // 1 hour
@@ -13,6 +17,13 @@ async function getFeaturedProducts(): Promise<Product[]> {
 
   const products = await response.json()
 
+=======
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/products/featured`,
+  )
+
+  const products = await response.json()
+>>>>>>> a920274c1012081181b4c5bd6051e931a8429bbc
   return products
 }
 

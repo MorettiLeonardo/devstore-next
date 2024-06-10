@@ -36,10 +36,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Build project
+        run: pnpm run build
+
+      - name: Start project
+        run: pnpm start &
+
       - name: Cypress run
         uses: cypress-io/github-action@v6
         env:
           NEXT_PUBLIC_API_BASE_URL: "https://devstore-api-g7an.vercel.app"
         with:
-          build: npm run build
-          start: npm start
+          wait-on: 'http://localhost:3000'
+          wait-on-timeout: 60
+          start: pnpm start

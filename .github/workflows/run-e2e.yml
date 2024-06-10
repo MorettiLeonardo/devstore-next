@@ -1,38 +1,45 @@
 name: Cypress Tests
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: push
 
 jobs:
   cypress-run:
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-22.04
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Install Node.js
+        use: actions/setup-node@v3
         with:
-          node-version: '20'  # Especifique a versão do Node.js
+          node-version: 20
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+          run_install: false
+
+      - name: Get pnpm store directory
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
 
-      - name: Start the application
-        run: npm start &
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
         env:
-          CI: true
-
-      - name: Wait for the application to be ready
-        run: npx wait-on https://devstore-api-g7an.vercel.app
-
-      - name: Run Cypress tests
-        run: npm run cypress:run
-        env:
-          CI: true
+          NEXT_PUBLIC_API_BASE_URL: "https://devstore-api-g7an.vercel.app"
+        with:
+          build: npm run build
+          start: npm start
